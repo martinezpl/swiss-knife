@@ -13,7 +13,7 @@ class CVThreshComp():
         
     def preview(self):
         cv2.namedWindow('preview', cv2.WINDOW_AUTOSIZE)
-        cv2.moveWindow('preview', 2000, 200)
+        cv2.moveWindow('preview', 0, 0)
         key = 0
         idx = 0
         while key != ord('q'):
@@ -47,14 +47,18 @@ class CVThreshComp():
             
     def tracker(self):
         cv2.namedWindow('preview', cv2.WINDOW_AUTOSIZE)
-        cv2.moveWindow('preview', 2000, 200)
+        cv2.moveWindow('preview', 0, 0)
         cv2.createTrackbar("Value", 'preview', 0, 255, self._track_action)
         cv2.createTrackbar("Type", 'preview', 0, len(self.types)-1, self._track_action_gate)
         cv2.imshow('preview', self.org)
-        cv2.waitKey()
-        cv2.destroyAllWindows()
-        cv2.waitKey(1)
+        while True:
+            key = cv2.waitKey()
+            if key == ord('q'):
+                cv2.destroyAllWindows()
+                cv2.waitKey(1)
+                break
         
+
     def _track_action(self, val):
         self.val = val
         info = [str(self.val), self.typ[1]]
@@ -68,20 +72,3 @@ class CVThreshComp():
     def _track_action_gate(self, val):
         self.typ = (self.types[val], self.titles[val])
         self._track_action(self.val)
-
-if __name__ == "__main__":
-    img = cv2.imread('omg.jpg')
-    img = cv2.resize(img, (img.shape[1]//3,img.shape[0]//3))
-    plt.imshow(img)
-
-    titles = ['BINARY','BINARY_INV','TRUNC','TOZERO','TOZERO_INV']
-    types = [cv2.THRESH_BINARY,
-        cv2.THRESH_BINARY_INV,
-        cv2.THRESH_TRUNC,
-        cv2.THRESH_TOZERO,
-        cv2.THRESH_TOZERO_INV]
-
-    comp = CVThreshComp(img, titles, types)
-
-    #comp.preview()
-    comp.tracker()
